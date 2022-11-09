@@ -1,52 +1,41 @@
-import telebot
-import config
-import logic
-from telebot import types
+from urllib import response
+from telebot import TeleBot
+from config import TOKEN
+from helper import firstMSG
 
+print('Пошла жара!!!')
 #bot
-bot = telebot.TeleBot(config.TOKEN)
+bot = TeleBot(TOKEN)
+print('Бот готов к работе')
 
 @bot.message_handler(commands=['start'])
 def get_start(message):
     sti = open('static/welcome.webp', 'rb')
 
-    message = logic.auth_user(message.chat.id)
+    msg = firstMSG(message.chat.id)
     
-    bot.send_message(message.chat.id, f"Добро пожаловать, {message.from_user.first_name} {message.from_user.last_name}")
+    bot.send_message(message.chat.id, (msg + message.from_user.first_name + message.from_user.last_name))
     bot.send_photo(message.chat.id, sti)
 
-'''
-@bot.message_handler(commands = ['info'])
-def get_user_info(message):
-    markup_inline = types.InlineKeyboardMarkup()
-    item_yes = types.InlineKeyboardButton(text = 'Да', callback_data = 'yes')
-    item_no = types.InlineKeyboardButton(text = 'Нет', callback_data = 'no')
 
-    markup_inline.add(item_yes, item_no)
-    bot.send_message(message.chat.id, 'Желаете узнать небольшую информацию о вас?',
-        reply_markup = markup_inline
-    )
+@bot.message_handler(commands=['add_result'])
+def add_result(message):
+    msgText =  'Ну давай запишем \n\nСколько раз сделал?'
+    msg = bot.send_message(message.chat.id, msgText)    
+    bot.register_next_step_handler(msg, set_num_approaches)
 
-@bot.callback_query_handler(func = lambda call: True)
-def answer(call):
-    if call.data == 'yes':
-        markup_reply = types.ReplyKeyboardMarkup(resize_keyboard = True)
-        item_id = types.KeyboardButton('Мой ID')
-        item_username = types.KeyboardButton('Мой ник')
 
-        markup_reply.add(item_id, item_username)
-        bot.send_message(call.message.chat.id, 'Нажмите на одну из кнопок',
-            reply_markup = markup_reply
-        )
-    elif call.data == 'no':
-        pass
+def set_num_approaches(message):
+    if int(message.text) > 20:
+        msgText = 'Ништяк!!! '
+    else:
+        msgText = 'Окей '
+    
+    msgText += 'А теперь количество подходов'
 
-@bot.message_handler(content_types=['text'])
-def get_text(message):
-    if message.text == 'Мой ID':
-        bot.send_message(message.chat.id, f'Your ID: {message.from_user.id}')
-    elif message.text == 'Мой ник':
-        bot.send_message(message.chat.id, f'Your ID: {message.from_user.first_name} {message.from_user.last_name}')
-'''
+
+    msg = bot.send_message(message.chat.id, 'Я записал твои результаты на текущую дату, до следующего раза, Мужчина!')  
+
+print('Бот запущен')
 
 bot.polling(none_stop=True)
