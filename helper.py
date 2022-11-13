@@ -1,4 +1,4 @@
-import db
+import db.db as db, db.dbModels as dbModel
 from config import msgs
 
 
@@ -15,5 +15,9 @@ def firstMSG(userId)-> str:
         return msgs['firstMSG']
 
 
+def db_conn()->None:
+    dbModel.db.connect()
+    dbModel.db.create_tables([dbModel.Result, dbModel.TypeExercise])
+    dbModel.db.close()
 
 

@@ -1,12 +1,17 @@
-from urllib import response
 from telebot import TeleBot
 from config import TOKEN
-from helper import firstMSG
+from helper import firstMSG, db_conn
+
 
 print('Пошла жара!!!')
 #bot
 bot = TeleBot(TOKEN)
 print('Бот готов к работе')
+
+print('Подключение к бд. Запуск')
+db_conn()
+print('Подключение к бд. Запуск прошёл успешно')
+
 
 @bot.message_handler(commands=['start'])
 def get_start(message):
