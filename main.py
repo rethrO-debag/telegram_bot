@@ -1,22 +1,24 @@
 from telebot import TeleBot
 from config import TOKEN
-from helper import firstMSG, db_conn
-
+from helper import firstMSG
+from db.database import user_exists, db_conn, user_auth
 
 print('Пошла жара!!!')
 #bot
 bot = TeleBot(TOKEN)
 print('Бот готов к работе')
 
-print('Подключение к бд. Запуск')
+# print('Подключение к бд. Запуск')
+# db_conn()
+# print('Подключение к бд. Запуск прошёл успешно')
 db_conn()
-print('Подключение к бд. Запуск прошёл успешно')
 
 
 @bot.message_handler(commands=['start'])
 def get_start(message):
     sti = open('static/welcome.webp', 'rb')
-
+    user_exists(message.chat.id)
+    # user_auth(message.chat.id)
     msg = firstMSG(message.chat.id)
     
     bot.send_message(message.chat.id, (msg + message.from_user.first_name + message.from_user.last_name))
